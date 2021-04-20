@@ -1,0 +1,27 @@
+name: "Pre-commit check"
+
+on: [ push ]
+
+jobs:
+  linter:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout 🛎
+        uses: actions/checkout@master
+
+      - name: Set up Python 🏗
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8.7'
+
+      - name: Install python dependencies 👨🏻‍💻
+        run: |
+          pip install -U pip
+          pip install poetry
+          poetry install
+        env:
+          POETRY_VIRTUALENVS_CREATE: false
+
+      - name: Run pre-commit 👀
+        run: poetry run pre-commit run -a
