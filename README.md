@@ -8,20 +8,20 @@
 
 This tool integrates with Binance, NBMiner and Cryptonator.
 
-It' really simple to use. It monitors your crypto-currency minerson binance and shows your current profits converted to your local currency! Isn't that great?
+It's really simple to use. It monitors your crypto-currency miners on binance and shows your current profits converted to your local currency! Isn't it great?
 
-You can take a look how it looks like.
+You can take a look of how it looks like.
 
 [![asciicast](https://asciinema.org/a/409013.svg)](https://asciinema.org/a/409013?autoplay=1)
 
 ## Installation
 
-To install the crypto_watcher you only need Python and Pip installed. And now you need to do the following:
+To install the crypto_watcher you only need Python and Pip installed. Simply run this command:
 ```bash
 pip install "crypto_watcher"
 ```
 
-And now you can run it.
+And now you can run the `crypto_watcher` from your command line.
 
 ## Usage
 
