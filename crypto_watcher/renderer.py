@@ -20,7 +20,7 @@ def _get_nb_devices_table(devices: List[Device]) -> Table:
         "accepted",
         "invalid",
         "HashRate",
-        "Temp °C",
+        "Temp",
         "Fan",
         "Mem",
         "Clock",
@@ -32,10 +32,10 @@ def _get_nb_devices_table(devices: List[Device]) -> Table:
             str(device.accepted_shares),
             str(device.invalid_shares),
             device.hashrate,
-            str(device.temperature),
-            str(device.fan),
-            f"{device.mem_clock} ({device.mem_utilization} %)",
-            f"{device.core_clock} ({device.core_utilization} %)",
+            f"{device.temperature} °C",
+            f"{device.fan}%",
+            f"{device.mem_clock} ({device.mem_utilization}%)",
+            f"{device.core_clock} ({device.core_utilization}%)",
         )
     return table
 
@@ -84,39 +84,47 @@ def _get_nb_layout(nb_status: NBMinerStatus) -> Layout:
     :param nb_status: current NBMiner status.
     :return: renderable layout.
     """
-    layout = Layout(name="NBMiner status")
+    layout = Layout(name="miner_status", ratio=2)
     layout.split_row(
         Layout(_get_nb_stratum_table(nb_status)),
-        Layout(_get_nb_devices_table(nb_status.miner.devices)),
+        Layout(_get_nb_devices_table(nb_status.miner.devices), ratio=2),
     )
     return layout
 
 
-def _get_profit_table(
-    table_name: str,
-    profits: Dict[str, ExchangeRate],
+def _get_profit_table(  # noqa: WPS210
+    bin_status: BinanceStatus,
+    profit_today: Dict[str, ExchangeRate],
+    profit_yesterday: Dict[str, ExchangeRate],
 ) -> Table:
     """Render profit table.
 
     This table is used to show user's profits
     converted to his local currency.
 
-    :param table_name: Title for table.
-    :param profits: Mapping of profits.
+    :param bin_status: current binance status.
+    :param profit_today: today's calculated profit.
+    :param profit_yesterday: yesterday's calcualted profit.
     :return: renderable table.
     """
     table = Table(
-        "crypto",
-        "change",
-        "profit",
-        title=table_name,
+        "crypto name",
+        "24h rate change",
+        "profit today",
+        "profit yesterday",
+        title="Profits",
     )
-    for crypto_name, rate in profits.items():
-        rate_color = "red" if rate.change < 0 else "green"
+    for crypto_name in bin_status.profit_today.keys():
+        crypto_today = bin_status.profit_today.get(crypto_name, "N/A")
+        crypto_yesterday = bin_status.profit_yesterday.get(crypto_name, "N/A")
+        rate_today = profit_today.get(crypto_name, "N/A")
+        rate_yesterday = profit_yesterday.get(crypto_name, "N/A")
+        rate_color = "red" if rate_today.change < 0 else "green"
         table.add_row(
             crypto_name,
-            Text(str(rate.change), rate_color),
-            f"{rate.rate} ({rate.target})",
+            Text(str(rate_today.change), rate_color),
+            f"{crypto_today} ({rate_today.rate} {rate_today.target})",
+            f"{crypto_yesterday} ({rate_yesterday.rate} {rate_yesterday.target})",
         )
     return table
 
@@ -159,7 +167,7 @@ def _get_binance_layout(
     :param profit_yesterday: yesterday's calcualted profit.
     :return: binance renderable layout.
     """
-    layout = Layout(name="Binance info")
+    layout = Layout(name="binance_status")
     layout.split_row(
         Layout(
             _get_binance_status(
@@ -167,16 +175,8 @@ def _get_binance_layout(
             ),
         ),
         Layout(
-            _get_profit_table(
-                "Today's profits",
-                profit_today,
-            ),
-        ),
-        Layout(
-            _get_profit_table(
-                "Yesterday's profits",
-                profit_yesterday,
-            ),
+            _get_profit_table(bin_status, profit_today, profit_yesterday),
+            ratio=2,
         ),
     )
     return layout
