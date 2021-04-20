@@ -30,8 +30,8 @@ You need to create and place somewhere your secrets file. It's  just a JSON file
 {
     "api_key": "<your api key from binance>",
     "secret_key": "<your secret key from binance>",
-    "user_name": "<your username>", // Your binance mining account username.
-    "algorithm": "ethash" // This algorithm is used, if watcher can't connect to NBMiner API.
+    "user_name": "<your binance account username>",
+    "algorithm": "<ethash or sha256. This algorithm is used, if watcher can't connect to NBMiner API and determine algorithm by itself>"
 }
 ```
 Default location of secrets file is `~/.binance_secrets`. But you can set your own by providing a parameter.
