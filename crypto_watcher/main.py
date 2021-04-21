@@ -26,7 +26,10 @@ def start_watcher(settings: Settings) -> None:  # noqa: WPS210
     with Live("Waiting for data...", screen=True) as term:
         while True:  # noqa: WPS457
             nb_status = nb_service.get_status()
-            new_bin_status = binance_service.get_status(nb_status.stratum.algorithm)
+            algorithm = settings.binance_algo
+            if nb_status:
+                algorithm = nb_status.stratum.algorithm
+            new_bin_status = binance_service.get_status(algorithm)
             if new_bin_status:
                 binance_status = new_bin_status
                 profit_today = cryptonator_service.convert(binance_status.profit_today)

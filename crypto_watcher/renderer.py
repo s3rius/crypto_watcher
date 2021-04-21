@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Any, Dict, List, Optional
 
 from rich.layout import Layout
 from rich.table import Table
@@ -183,7 +183,7 @@ def _get_binance_layout(
 
 
 def get_layout(
-    nb_status: NBMinerStatus,
+    nb_status: Optional[NBMinerStatus],
     bin_status: BinanceStatus,
     profit_today: Dict[str, ExchangeRate],
     profit_yesterday: Dict[str, ExchangeRate],
@@ -198,7 +198,9 @@ def get_layout(
     :return: layout for render in terminal.
     """
     main_layout = Layout()
-    nb_layout = _get_nb_layout(nb_status)
+    nb_layout: Any = Text("Can't connect to NBMiner.", justify="center")
+    if nb_status is not None:
+        nb_layout = _get_nb_layout(nb_status)
     bin_layout = _get_binance_layout(bin_status, profit_today, profit_yesterday)
     main_layout.split_column(
         nb_layout,
